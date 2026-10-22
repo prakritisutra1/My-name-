@@ -309,5 +309,10 @@ var PRODUCT = {
   });
 })();
 </script>
+  <script>
+document.addEventListener('submit', function () {
+  if (typeof fbq === 'function') fbq('track', 'Lead');
+}, true);
+</script>
 </body>
 </html>
