@@ -166,6 +166,14 @@ html{color-scheme:light}
 .cta.alt{background:transparent;color:#2f4f36;border:2px solid #2f4f36;box-shadow:none}
 .price b{color:#111}
 .price .tx{width:100%;font-size:13px;color:var(--muted);order:5}
+#exitDlg{max-width:380px}
+#exitDlg .dlg{text-align:center;padding:26px 20px 20px}
+#exitDlg .tg{display:inline-block;background:#e8f3ea;color:#2f4f36;font-weight:700;font-size:13px;padding:4px 12px;border-radius:99px;margin-bottom:10px}
+#exitDlg h2{font-size:24px;line-height:1.25;color:#2f4f36;margin:0 0 8px}
+#exitDlg .pr{font-size:17px;color:#222;margin:0 0 6px}
+#exitDlg .pr b{font-size:22px;color:#111}
+#exitDlg .cod{color:#168a3a;font-weight:700;margin:0 0 14px}
+#exitDlg .fn{font-size:13px;color:#666;margin:12px 0 0}
 .steps3{background:#e1f8e4;border:1px solid #bfe3c5;border-radius:14px;padding:18px}
 .steps3 h2{color:#168a3a;margin:0 0 12px}
 .steps3 ol{list-style:none;margin:0;padding:0;display:grid;gap:12px;counter-reset:s}
@@ -250,6 +258,18 @@ footer.site .copy{margin-top:22px;padding-top:14px;border-top:1px solid rgba(255
   </div>
 </dialog>
 
+
+<dialog id="exitDlg" aria-labelledby="exT">
+  <div class="dlg">
+    <button class="x" type="button" id="exX" aria-label="बंद करें">&times;</button>
+    <span class="tg">🌿 एक मिनट रुकिए</span>
+    <h2 id="exT">रुकिए! जाने से पहले<br>यह ऑफर देख लीजिए</h2>
+    <p class="pr">Prakriti Sutra कॉम्बो अभी सिर्फ़ <b>₹999</b> में</p>
+    <p class="cod">✅ Cash on Delivery उपलब्ध</p>
+    <button class="cta" type="button" id="exGo" data-order>अभी ऑर्डर करें ₹999 COD</button>
+    <p class="fn">🔒 सीक्रेट पैकिंग · फ्री डिलीवरी</p>
+  </div>
+</dialog>
 <script>
 /* ============ यहाँ अपनी जानकारी बदलें / EDIT THIS PART ============ */
 var CONFIG = {
@@ -444,6 +464,35 @@ var PRODUCT = {
     }).catch(function () { err.textContent = "नहीं भेज पाए। इंटरनेट जाँचकर फिर कोशिश करें।"; })
       .then(function () { sending = false; btn.disabled = false; btn.textContent = "रिव्यू भेजें"; });
   });
+})();
+</script>
+<script>
+/* Exit popup: shows once per visit when the visitor is about to leave (desktop: mouse leaves the top; phone: first Back press). */
+(function () {
+  var d = document.getElementById("exitDlg"), shown = false;
+  function ok() {
+    var od = document.getElementById("dlg"), rd = document.getElementById("rdlg"), done = document.getElementById("done");
+    return !shown && !(od && od.open) && !(rd && rd.open) && !(done && !done.hidden);
+  }
+  function show() {
+    try { if (sessionStorage.getItem("ps_exit")) return; } catch (e) {}
+    if (!ok()) return;
+    shown = true;
+    try { sessionStorage.setItem("ps_exit", "1"); } catch (e) {}
+    if (d.showModal) d.showModal(); else d.setAttribute("open", "");
+  }
+  document.getElementById("exX").addEventListener("click", function () { d.close(); });
+  document.getElementById("exGo").addEventListener("click", function () { d.close(); });
+  d.addEventListener("click", function (e) { if (e.target === d) d.close(); });
+  // desktop
+  document.addEventListener("mouseout", function (e) { if (!e.relatedTarget && e.clientY <= 0) show(); });
+  // phone: first Back press shows the popup instead of leaving; the second Back leaves normally
+  try {
+    var armed = false;
+    function arm() { if (armed) return; armed = true; history.pushState({ psExit: 1 }, "", location.href); }
+    ["touchstart", "scroll", "click"].forEach(function (ev) { window.addEventListener(ev, arm, { once: true, passive: true }); });
+    window.addEventListener("popstate", function () { if (armed && ok()) { show(); } });
+  } catch (e) {}
 })();
 </script>
 </body>
